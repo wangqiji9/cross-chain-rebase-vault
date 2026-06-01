@@ -1,66 +1,35 @@
-## Foundry
+# Cross-Chain Rebase Vault
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+**Stack:** Solidity 0.8.24 · Foundry · Chainlink CCIP · OpenZeppelin
 
-Foundry consists of:
+A cross-chain rebase token built with Chainlink CCIP. Users deposit ETH on Sepolia to receive yield-bearing RBT tokens, and can bridge them to Arbitrum Sepolia while preserving their personal interest rate.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Token balances grow automatically over time. Interest accrues per second at a rate locked in at deposit — since the global rate can only decrease, earlier depositors always earn more. Tokens are minted lazily: `balanceOf()` reflects accrued interest in real time, but the actual mint only happens on interaction.
 
-## Documentation
+When bridging cross-chain, the user's interest rate is encoded into the CCIP message payload and restored on the destination chain.
 
-https://book.getfoundry.sh/
+The Vault accepts ETH deposits and mints RBT 1:1. On redemption, RBT is burned and ETH is returned — funded by deposits and external yield injected via `receive()`. The Vault does not generate yield itself; accrued interest creates a liability that must be covered externally.
 
-## Usage
+## Deployed Contracts
 
-### Build
+### Sepolia
 
-```shell
-$ forge build
-```
+| Contract | Address |
+|----------|---------|
+| RebaseToken | `0xCAF1AF19c231A0Ccfa9C1e7f5dB426623696A2A3` |
+| RebaseTokenPool | `0x8eEACc4c833bB9812EBfd440869B8d47f5D0f716` |
+| Vault | `0x8eB039856fE13b266d7C8fb3780f510e85340E19` |
 
-### Test
+### Arbitrum Sepolia
 
-```shell
-$ forge test
-```
+| Contract | Address |
+|----------|---------|
+| RebaseToken | `0x1c3018d36BCF96E3156dDF8d57b4B37Fb9a06171` |
+| RebaseTokenPool | `0xB98A473f3497B4DAd4F88C1C80a3ee88A2975baD` |
 
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
+## Build & Test
 
 ```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+forge build
+forge test
 ```
